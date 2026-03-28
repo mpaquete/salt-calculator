@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salt Calculator – Kitchen Companion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600;700&family=Inconsolata:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cream: #FFF8F0;
+            --warm-white: #FFFEF9;
+            --terracotta: #D4735E;
+            --burnt-sienna: #9E5A4A;
+            --olive: #6B7D5C;
+            --deep-olive: #4A5940;
+            --sand: #E8DCC4;
+            --charcoal: #2C2C2C;
+            --soft-gray: #6B6B6B;
+            --accent-gold: #C89F68;
+        }
+
+        body {
+            font-family: 'Crimson Pro', serif;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--warm-white) 50%, #FFF5E8 100%);
+            color: var(--charcoal);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(212, 115, 94, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(107, 125, 92, 0.06) 0%, transparent 50%);
+            animation: breathe 20s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-5%, -5%) scale(1.05); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 300;
+            color: var(--burnt-sienna);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        h1 strong {
+            font-weight: 700;
+            color: var(--terracotta);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--soft-gray);
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .attribution {
+            font-size: 0.9rem;
+            color: var(--olive);
+            font-family: 'Inconsolata', monospace;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            background: var(--warm-white);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 
+                0 1px 3px rgba(0,0,0,0.05),
+                0 8px 24px rgba(212, 115, 94, 0.08);
+            border: 1px solid rgba(212, 115, 94, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 
+                0 1px 3px rgba(0,0,0,0.05),
+                0 12px 32px rgba(212, 115, 94, 0.12);
+            transform: translateY(-2px);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--burnt-sienna);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2::before {
+            content: '◆';
+            color: var(--terracotta);
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--deep-olive);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.02em;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            font-size: 1rem;
+            font-family: 'Crimson Pro', serif;
+            border: 2px solid var(--sand);
+            border-radius: 10px;
+            background: var(--cream);
+            color: var(--charcoal);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        select:hover, input:hover {
+            border-color: var(--terracotta);
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--terracotta);
+            background: var(--warm-white);
+            box-shadow: 0 0 0 4px rgba(212, 115, 94, 0.1);
+        }
+
+        input[type="number"] {
+            font-family: 'Inconsolata', monospace;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .unit-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .unit-button {
+            padding: 0.6rem;
+            border: 2px solid var(--sand);
+            background: var(--cream);
+            border-radius: 8px;
+            font-family: 'Crimson Pro', serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--soft-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .unit-button:hover {
+            border-color: var(--terracotta);
+            color: var(--burnt-sienna);
+        }
+
+        .unit-button.active {
+            background: var(--terracotta);
+            border-color: var(--terracotta);
+            color: white;
+        }
+
+        .results {
+            animation: slideInRight 0.6s ease-out 0.5s both;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .result-item {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--warm-white) 100%);
+            border-left: 4px solid var(--terracotta);
+            padding: 1.5rem;
+            margin-bottom: 1.2rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            background: var(--warm-white);
+            border-left-width: 6px;
+            padding-left: 1.4rem;
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--olive);
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--burnt-sienna);
+            font-family: 'Inconsolata', monospace;
+        }
+
+        .result-note {
+            font-size: 0.9rem;
+            color: var(--soft-gray);
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+
+        .comparison-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px dashed rgba(212, 115, 94, 0.2);
+            animation: fadeIn 1s ease-out 0.7s both;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .comparison-item {
+            background: var(--cream);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(107, 125, 92, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .comparison-item:hover {
+            background: var(--warm-white);
+            border-color: var(--olive);
+            transform: translateY(-2px);
+        }
+
+        .salt-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--deep-olive);
+            margin-bottom: 0.3rem;
+        }
+
+        .salt-amount {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--terracotta);
+            font-family: 'Inconsolata', monospace;
+        }
+
+        .reference-table {
+            grid-column: 1 / -1;
+            animation: fadeIn 1s ease-out 0.9s both;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 1rem;
+            border-radius: 12px;
+            border: 2px solid rgba(212, 115, 94, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background: var(--warm-white);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--terracotta) 0%, var(--burnt-sienna) 100%);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid rgba(212, 115, 94, 0.1);
+            color: var(--charcoal);
+        }
+
+        tr:hover td {
+            background: rgba(212, 115, 94, 0.04);
+        }
+
+        .salt-type-col {
+            font-weight: 600;
+            color: var(--burnt-sienna);
+        }
+
+        .footer-note {
+            background: linear-gradient(135deg, rgba(107, 125, 92, 0.08) 0%, rgba(212, 115, 94, 0.08) 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 2rem;
+            border: 2px dashed rgba(107, 125, 92, 0.2);
+            animation: fadeIn 1s ease-out 1.1s both;
+        }
+
+        .footer-note p {
+            font-size: 1.1rem;
+            color: var(--deep-olive);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .footer-note strong {
+            color: var(--terracotta);
+            font-weight: 700;
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .comparison-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--soft-gray);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: var(--olive);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .percentage-display {
+            background: rgba(107, 125, 92, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--olive);
+        }
+
+        .percentage-label {
+            font-size: 0.85rem;
+            color: var(--deep-olive);
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .percentage-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--olive);
+            font-family: 'Inconsolata', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Kitchen <strong>Salt</strong> Calculator</h1>
+            <p class="subtitle">Perfect your seasoning with precision</p>
+            <p class="attribution">Based on Salt, Fat, Acid, Heat by Samin Nosrat</p>
+        </header>
+
+        <div class="main-grid">
+            <div class="card inputs">
+                <h2>Your Recipe</h2>
+                
+                <div class="input-group">
+                    <label for="saltType">Salt Type</label>
+                    <select id="saltType">
+                        <option value="fine-sea">Fine Sea Salt</option>
+                        <option value="maldon">Maldon Salt</option>
+                        <option value="sel-gris">Sel Gris</option>
+                        <option value="table">Table Salt</option>
+                        <option value="morton">Morton's Kosher Salt</option>
+                        <option value="diamond">Diamond Crystal Kosher Salt</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="useCase">What are you making?</label>
+                    <select id="useCase">
+                        <option value="boneless-meat">Boneless Meat</option>
+                        <option value="bone-in-meat">Meat on the Bone (Roast Chicken)</option>
+                        <option value="vegetables">Vegetables & Grains</option>
+                        <option value="blanching">Blanching or Pasta Water</option>
+                        <option value="dough">Doughs & Batters</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="amount">Amount <span class="info-badge" id="currentUnit">lbs</span></label>
+                    <input type="number" id="amount" min="0" step="0.1" value="1" placeholder="Enter amount">
+                    <div class="unit-toggle">
+                        <button class="unit-button active" data-unit="imperial">Pounds / Cups</button>
+                        <button class="unit-button" data-unit="metric">Grams / Milliliters</button>
+                    </div>
+                </div>
+
+                <div id="percentageDisplay" class="percentage-display" style="display: none;">
+                    <div class="percentage-label">Salt Percentage by Weight</div>
+                    <div class="percentage-value" id="percentageValue"></div>
+                </div>
+            </div>
+
+            <div class="card results">
+                <h2>Recommended Salt Amount</h2>
+                <div id="resultContent">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🧂</div>
+                        <p>Enter your details to see salt recommendations</p>
+                    </div>
+                </div>
+
+                <div class="comparison-section" id="comparisonSection" style="display: none;">
+                    <h3 style="color: var(--deep-olive); font-size: 1.2rem; margin-bottom: 1rem;">
+                        Same amount in other salts
+                    </h3>
+                    <div class="comparison-grid" id="comparisonGrid"></div>
+                </div>
+            </div>
+
+            <div class="card reference-table">
+                <h2>Complete Reference Table</h2>
+                <div class="table-wrapper">
+                    <table id="referenceTable">
+                        <thead>
+                            <tr>
+                                <th>Salt Type</th>
+                                <th>Weight/Tbsp</th>
+                                <th>Boneless Meat</th>
+                                <th>Bone-in Meat</th>
+                                <th>Vegetables</th>
+                                <th>Pasta Water</th>
+                                <th>Dough</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            <p><strong>Remember:</strong> Your palate is the ultimate arbiter. These are suggestions on where to start.</p>
+        </div>
+    </div>
+
+    <script>
+        // Salt data structure
+        const saltData = {
+            'fine-sea': {
+                name: 'Fine Sea Salt',
+                gramsPerTbsp: 14.6,
+                measurements: {
+                    'boneless-meat': { tsp: 1.125, fraction: '1⅛ tsp', percentage: 1.25 },
+                    'bone-in-meat': { tsp: 1.333, fraction: '1⅓ tsp', percentage: 1.5 },
+                    'vegetables': { tsp: 1, fraction: '1 scant tsp', percentage: 1.0 },
+                    'blanching': { tbsp: 1, tsp: 1, fraction: '1 Tbsp + 1 scant tsp', percentage: 2.0 },
+                    'dough': { tsp: 0.75, fraction: '¾ tsp', percentage: 2.5 }
+                }
+            },
+            'maldon': {
+                name: 'Maldon Salt',
+                gramsPerTbsp: 8.4,
+                measurements: {
+                    'boneless-meat': { tsp: 2, fraction: '2 tsp', percentage: 1.25 },
+                    'bone-in-meat': { tsp: 2.5, fraction: '2½ tsp', percentage: 1.5 },
+                    'vegetables': { tsp: 1.667, fraction: '1⅔ tsp', percentage: 1.0 },
+                    'blanching': { tbsp: 2, tsp: 0.75, fraction: '2 Tbsp + ¾ tsp', percentage: 2.0 },
+                    'dough': { tsp: 1.333, fraction: '1⅓ tsp', percentage: 2.5 }
+                }
+            },
+            'sel-gris': {
+                name: 'Sel Gris',
+                gramsPerTbsp: 13,
+                measurements: {
+                    'boneless-meat': { tsp: 1.25, fraction: '1¼ tsp', percentage: 1.25 },
+                    'bone-in-meat': { tsp: 1.25, fraction: '1¼ tsp', percentage: 1.5 },
+                    'vegetables': { tsp: 1, fraction: '1 tsp', percentage: 1.0 },
+                    'blanching': { tbsp: 1, tsp: 0.375, fraction: '1 Tbsp + ⅜ tsp', percentage: 2.0 },
+                    'dough': { tsp: 1, fraction: '1 scant tsp', percentage: 2.5 }
+                }
+            },
+            'table': {
+                name: 'Table Salt',
+                gramsPerTbsp: 18.6,
+                measurements: {
+                    'boneless-meat': { tsp: 0.667, fraction: '⅔ tsp', percentage: 1.25 },
+                    'bone-in-meat': { tsp: 1.125, fraction: '1⅛ tsp', percentage: 1.5 },
+                    'vegetables': { tsp: 0.75, fraction: '¾ tsp', percentage: 1.0 },
+                    'blanching': { tbsp: 1, tsp: 0, fraction: '1 Tbsp', percentage: 2.0 },
+                    'dough': { tsp: 0.667, fraction: '⅔ tsp', percentage: 2.5 }
+                }
+            },
+            'morton': {
+                name: "Morton's Kosher Salt",
+                gramsPerTbsp: 14.75,
+                measurements: {
+                    'boneless-meat': { tsp: 1.125, fraction: '1⅛ tsp', percentage: 1.25 },
+                    'bone-in-meat': { tsp: 1.333, fraction: '1⅓ tsp', percentage: 1.5 },
+                    'vegetables': { tsp: 1, fraction: '1 scant tsp', percentage: 1.0 },
+                    'blanching': { tbsp: 1, tsp: 1, fraction: '1 Tbsp + 1 scant tsp', percentage: 2.0 },
+                    'dough': { tsp: 0.75, fraction: '¾ tsp', percentage: 2.5 }
+                }
+            },
+            'diamond': {
+                name: 'Diamond Crystal Kosher Salt',
+                gramsPerTbsp: 9.75,
+                measurements: {
+                    'boneless-meat': { tsp: 1.75, fraction: '1¾ tsp', percentage: 1.25 },
+                    'bone-in-meat': { tsp: 2.125, fraction: '2⅛ tsp', percentage: 1.5 },
+                    'vegetables': { tsp: 1.333, fraction: '1⅓ tsp', percentage: 1.0 },
+                    'blanching': { tbsp: 2, tsp: 0, fraction: '2 scant Tbsp', percentage: 2.0 },
+                    'dough': { tsp: 1.125, fraction: '1⅛ tsp', percentage: 2.5 }
+                }
+            }
+        };
+
+        // State
+        let currentUnit = 'imperial'; // 'imperial' or 'metric'
+        let currentSalt = 'fine-sea';
+        let currentUse = 'boneless-meat';
+        let currentAmount = 1;
+
+        // DOM elements
+        const saltTypeSelect = document.getElementById('saltType');
+        const useCaseSelect = document.getElementById('useCase');
+        const amountInput = document.getElementById('amount');
+        const unitButtons = document.querySelectorAll('.unit-button');
+        const currentUnitBadge = document.getElementById('currentUnit');
+        const resultContent = document.getElementById('resultContent');
+        const comparisonSection = document.getElementById('comparisonSection');
+        const comparisonGrid = document.getElementById('comparisonGrid');
+        const percentageDisplay = document.getElementById('percentageDisplay');
+        const percentageValue = document.getElementById('percentageValue');
+        const tableBody = document.getElementById('tableBody');
+
+        // Initialize
+        function init() {
+            populateReferenceTable();
+            updateCalculation();
+            attachEventListeners();
+        }
+
+        function attachEventListeners() {
+            saltTypeSelect.addEventListener('change', (e) => {
+                currentSalt = e.target.value;
+                updateCalculation();
+            });
+
+            useCaseSelect.addEventListener('change', (e) => {
+                currentUse = e.target.value;
+                updateCalculation();
+            });
+
+            amountInput.addEventListener('input', (e) => {
+                currentAmount = parseFloat(e.target.value) || 0;
+                updateCalculation();
+            });
+
+            unitButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const newUnit = e.target.dataset.unit;
+                    if (newUnit !== currentUnit) {
+                        currentUnit = newUnit;
+                        unitButtons.forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        updateUnitLabel();
+                        updateCalculation();
+                    }
+                });
+            });
+        }
+
+        function updateUnitLabel() {
+            if (currentUse === 'blanching') {
+                currentUnitBadge.textContent = currentUnit === 'imperial' ? 'quarts' : 'ml';
+            } else if (currentUse === 'dough') {
+                currentUnitBadge.textContent = currentUnit === 'imperial' ? 'cups flour' : 'g flour';
+            } else {
+                currentUnitBadge.textContent = currentUnit === 'imperial' ? 'lbs' : 'grams';
+            }
+        }
+
+        function calculateSalt() {
+            if (currentAmount <= 0) return null;
+
+            const salt = saltData[currentSalt];
+            const measurement = salt.measurements[currentUse];
+            const percentage = measurement.percentage;
+
+            let baseAmount = currentAmount;
+            
+            // Convert to pounds/quarts/cups for calculation (base unit)
+            if (currentUnit === 'metric') {
+                if (currentUse === 'blanching') {
+                    baseAmount = currentAmount / 946.353; // ml to quarts
+                } else if (currentUse === 'dough') {
+                    baseAmount = currentAmount / 120; // grams flour to cups (approx 120g per cup)
+                } else {
+                    baseAmount = currentAmount / 453.592; // grams to pounds
+                }
+            }
+
+            // Calculate salt in grams
+            let saltGrams;
+            if (currentUse === 'blanching') {
+                // 2% salinity per quart = 2% of 946ml = 18.93g per quart
+                saltGrams = baseAmount * 946.353 * (percentage / 100);
+            } else if (currentUse === 'dough') {
+                // 2.5% per cup of flour (120g per cup)
+                saltGrams = baseAmount * 120 * (percentage / 100);
+            } else {
+                // Percentage of weight
+                saltGrams = baseAmount * 453.592 * (percentage / 100);
+            }
+
+            // Convert to teaspoons based on salt density
+            const tspFromGrams = saltGrams / (salt.gramsPerTbsp / 3);
+
+            return {
+                grams: saltGrams,
+                tsp: tspFromGrams,
+                tbsp: tspFromGrams / 3,
+                percentage: percentage,
+                baseFraction: measurement.fraction
+            };
+        }
+
+        function formatMeasurement(tsp) {
+            const tbsp = tsp / 3;
+            
+            if (tbsp >= 1) {
+                const wholeTbsp = Math.floor(tbsp);
+                const remainderTsp = (tsp % 3);
+                
+                if (remainderTsp < 0.1) {
+                    return `${wholeTbsp} Tbsp`;
+                } else if (remainderTsp < 0.4) {
+                    return `${wholeTbsp} Tbsp + ¼ tsp`;
+                } else if (remainderTsp < 0.6) {
+                    return `${wholeTbsp} Tbsp + ½ tsp`;
+                } else if (remainderTsp < 0.9) {
+                    return `${wholeTbsp} Tbsp + ¾ tsp`;
+                } else if (remainderTsp < 1.2) {
+                    return `${wholeTbsp} Tbsp + 1 tsp`;
+                } else if (remainderTsp < 1.6) {
+                    return `${wholeTbsp} Tbsp + 1¼ tsp`;
+                } else if (remainderTsp < 1.9) {
+                    return `${wholeTbsp} Tbsp + 1½ tsp`;
+                } else if (remainderTsp < 2.2) {
+                    return `${wholeTbsp} Tbsp + 1¾ tsp`;
+                } else {
+                    return `${wholeTbsp} Tbsp + 2 tsp`;
+                }
+            } else {
+                if (tsp < 0.3) {
+                    return '¼ tsp';
+                } else if (tsp < 0.4) {
+                    return '⅓ tsp';
+                } else if (tsp < 0.6) {
+                    return '½ tsp';
+                } else if (tsp < 0.7) {
+                    return '⅔ tsp';
+                } else if (tsp < 0.9) {
+                    return '¾ tsp';
+                } else if (tsp < 1.2) {
+                    return '1 tsp';
+                } else if (tsp < 1.4) {
+                    return '1¼ tsp';
+                } else if (tsp < 1.6) {
+                    return '1⅓ tsp';
+                } else if (tsp < 1.9) {
+                    return '1½ tsp';
+                } else if (tsp < 2.2) {
+                    return '1¾ tsp';
+                } else if (tsp < 2.4) {
+                    return '2 tsp';
+                } else if (tsp < 2.6) {
+                    return '2¼ tsp';
+                } else if (tsp < 2.8) {
+                    return '2⅓ tsp';
+                } else {
+                    return `${tsp.toFixed(1)} tsp`;
+                }
+            }
+        }
+
+        function updateCalculation() {
+            updateUnitLabel();
+            
+            const result = calculateSalt();
+            
+            if (!result) {
+                resultContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🧂</div>
+                        <p>Enter an amount to see salt recommendations</p>
+                    </div>
+                `;
+                comparisonSection.style.display = 'none';
+                percentageDisplay.style.display = 'none';
+                return;
+            }
+
+            // Show percentage
+            percentageDisplay.style.display = 'block';
+            percentageValue.textContent = `${result.percentage}% by weight`;
+
+            // Main result
+            const saltName = saltData[currentSalt].name;
+            resultContent.innerHTML = `
+                <div class="result-item">
+                    <div class="result-label">Add ${saltName}</div>
+                    <div class="result-value">${formatMeasurement(result.tsp)}</div>
+                    <div class="result-note">${result.grams.toFixed(1)}g</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">For 1 ${getCurrentUnitLabel()}</div>
+                    <div class="result-value">${saltData[currentSalt].measurements[currentUse].fraction}</div>
+                    <div class="result-note">Base guideline from SFAH</div>
+                </div>
+            `;
+
+            // Comparison section
+            comparisonSection.style.display = 'block';
+            comparisonGrid.innerHTML = '';
+            
+            Object.entries(saltData).forEach(([key, salt]) => {
+                if (key === currentSalt) return;
+                
+                // Calculate equivalent amount in this salt
+                const equivalentGrams = result.grams;
+                const equivalentTsp = equivalentGrams / (salt.gramsPerTbsp / 3);
+                
+                const item = document.createElement('div');
+                item.className = 'comparison-item';
+                item.innerHTML = `
+                    <div class="salt-name">${salt.name}</div>
+                    <div class="salt-amount">${formatMeasurement(equivalentTsp)}</div>
+                `;
+                comparisonGrid.appendChild(item);
+            });
+        }
+
+        function getCurrentUnitLabel() {
+            if (currentUse === 'blanching') {
+                return currentUnit === 'imperial' ? 'quart water' : '946ml water';
+            } else if (currentUse === 'dough') {
+                return currentUnit === 'imperial' ? 'cup flour' : '120g flour';
+            } else {
+                return currentUnit === 'imperial' ? 'lb' : '454g';
+            }
+        }
+
+        function populateReferenceTable() {
+            tableBody.innerHTML = '';
+            
+            Object.entries(saltData).forEach(([key, salt]) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="salt-type-col">${salt.name}</td>
+                    <td>${salt.gramsPerTbsp}g</td>
+                    <td>${salt.measurements['boneless-meat'].fraction}</td>
+                    <td>${salt.measurements['bone-in-meat'].fraction}</td>
+                    <td>${salt.measurements['vegetables'].fraction}</td>
+                    <td>${salt.measurements['blanching'].fraction}</td>
+                    <td>${salt.measurements['dough'].fraction}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>

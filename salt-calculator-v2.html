@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salting Calculator - From Salt, Fat, Acid, Heat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600;700&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2d5016;
+            --primary-light: #4a7f2a;
+            --primary-dark: #1a3009;
+            --accent: #d97706;
+            --accent-light: #f59e0b;
+            --accent-red: #c2410c;
+            --bg-cream: #faf8f3;
+            --bg-white: #ffffff;
+            --text-dark: #1f2937;
+            --text-mid: #4b5563;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-md: rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Pro', serif;
+            background: linear-gradient(135deg, #faf8f3 0%, #f5f1e8 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--text-mid);
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+
+        .source {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px var(--shadow);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 30px var(--shadow-md);
+        }
+
+        .card-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .section-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-mid);
+            margin-bottom: 1rem;
+        }
+
+        .salt-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .salt-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .salt-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .salt-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: var(--bg-cream);
+        }
+
+        .salt-option input[type="radio"]:checked + .salt-label {
+            border-color: var(--primary);
+            background: rgba(77, 127, 42, 0.05);
+            box-shadow: 0 0 0 3px rgba(77, 127, 42, 0.1);
+        }
+
+        .salt-label:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .salt-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-white);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .salt-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            line-height: 1.3;
+        }
+
+        .use-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .use-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .use-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .use-label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: var(--bg-cream);
+        }
+
+        .use-option input[type="radio"]:checked + .use-label {
+            border-color: var(--accent);
+            background: rgba(217, 119, 6, 0.05);
+            color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+        }
+
+        .use-label:hover {
+            border-color: var(--accent-light);
+            transform: translateY(-2px);
+        }
+
+        .quantity-input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: stretch;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-family: 'Crimson Pro', serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: var(--bg-white);
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(77, 127, 42, 0.1);
+        }
+
+        .unit-toggle {
+            display: flex;
+            background: var(--bg-cream);
+            border-radius: 12px;
+            padding: 0.25rem;
+            border: 2px solid var(--border);
+        }
+
+        .unit-btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            background: transparent;
+            font-family: 'Crimson Pro', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            color: var(--text-mid);
+        }
+
+        .unit-btn.active {
+            background: var(--bg-white);
+            color: var(--primary);
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .slider-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .slider-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Fraunces', serif;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px var(--shadow-md);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .percentage-markers {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #ffe8d1 0%, #f4f7f0 100%);
+            border: 3px solid var(--accent-red);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .result-header {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-red);
+            margin-bottom: 1.5rem;
+        }
+
+        .result-main {
+            margin: 2rem 0;
+        }
+
+        .result-amount {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(4rem, 10vw, 6rem);
+            font-weight: 400;
+            line-height: 1;
+            margin-bottom: 0.75rem;
+            color: var(--accent-red);
+        }
+
+        .result-grams {
+            font-size: 1.5rem;
+            color: var(--text-mid);
+            font-style: italic;
+            margin-bottom: 2rem;
+        }
+
+        .result-divider {
+            width: 100%;
+            height: 1px;
+            background: repeating-linear-gradient(
+                to right,
+                var(--border) 0px,
+                var(--border) 8px,
+                transparent 8px,
+                transparent 16px
+            );
+            margin: 2rem 0;
+        }
+
+        .result-per-lb {
+            margin-top: 2rem;
+        }
+
+        .per-lb-label {
+            font-size: 0.95rem;
+            color: var(--text-mid);
+            margin-bottom: 0.5rem;
+        }
+
+        .per-lb-amount {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-mid);
+        }
+
+        .per-lb-note {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        .disclaimer {
+            margin-top: 2rem;
+            padding: 1.25rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            font-style: italic;
+            color: var(--text-mid);
+        }
+
+        .info-tooltip {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            line-height: 18px;
+            cursor: help;
+            margin-left: 0.25rem;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .salt-grid, .use-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .result-amount {
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Salting Calculator</h1>
+            <p class="subtitle">Professional guidelines for home cooks</p>
+            <p class="source">Based on Salt, Fat, Acid, Heat by Samin Nosrat</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Input Card -->
+            <div class="card">
+                <h2 class="card-title">Calculate Your Salt</h2>
+
+                <!-- Salt Type Selection -->
+                <div class="section-label">What type of salt are you using?</div>
+                <div class="salt-grid">
+                    <div class="salt-option">
+                        <input type="radio" id="diamond" name="saltType" value="diamond" checked>
+                        <label class="salt-label" for="diamond">
+                            <span class="salt-icon">💎</span>
+                            <span class="salt-name">Diamond Crystal Kosher</span>
+                        </label>
+                    </div>
+                    <div class="salt-option">
+                        <input type="radio" id="morton" name="saltType" value="morton">
+                        <label class="salt-label" for="morton">
+                            <span class="salt-icon">🧂</span>
+                            <span class="salt-name">Morton's Kosher</span>
+                        </label>
+                    </div>
+                    <div class="salt-option">
+                        <input type="radio" id="fine-sea" name="saltType" value="fine-sea">
+                        <label class="salt-label" for="fine-sea">
+                            <span class="salt-icon">🌊</span>
+                            <span class="salt-name">Fine Sea Salt</span>
+                        </label>
+                    </div>
+                    <div class="salt-option">
+                        <input type="radio" id="table" name="saltType" value="table">
+                        <label class="salt-label" for="table">
+                            <span class="salt-icon">📋</span>
+                            <span class="salt-name">Table Salt</span>
+                        </label>
+                    </div>
+                    <div class="salt-option">
+                        <input type="radio" id="sel-gris" name="saltType" value="sel-gris">
+                        <label class="salt-label" for="sel-gris">
+                            <span class="salt-icon">⚫</span>
+                            <span class="salt-name">Sel Gris</span>
+                        </label>
+                    </div>
+                    <div class="salt-option">
+                        <input type="radio" id="maldon" name="saltType" value="maldon">
+                        <label class="salt-label" for="maldon">
+                            <span class="salt-icon">❄️</span>
+                            <span class="salt-name">Maldon Salt</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Cooking Use Selection -->
+                <div class="section-label">What are you salting?</div>
+                <div class="use-grid">
+                    <div class="use-option">
+                        <input type="radio" id="boneless" name="cookingUse" value="boneless" checked>
+                        <label class="use-label" for="boneless">Boneless Meat</label>
+                    </div>
+                    <div class="use-option">
+                        <input type="radio" id="bone-in" name="cookingUse" value="bone-in">
+                        <label class="use-label" for="bone-in">Meat on the Bone</label>
+                    </div>
+                    <div class="use-option">
+                        <input type="radio" id="veggies" name="cookingUse" value="veggies">
+                        <label class="use-label" for="veggies">Vegetables & Grains</label>
+                    </div>
+                    <div class="use-option">
+                        <input type="radio" id="water" name="cookingUse" value="water">
+                        <label class="use-label" for="water">Pasta/Blanching Water</label>
+                    </div>
+                    <div class="use-option">
+                        <input type="radio" id="dough" name="cookingUse" value="dough">
+                        <label class="use-label" for="dough">Dough & Batters</label>
+                    </div>
+                </div>
+
+                <!-- Quantity Input -->
+                <div class="section-label">How much are you salting?</div>
+                <div class="quantity-input-group">
+                    <div class="input-row">
+                        <div class="input-wrapper">
+                            <input type="number" id="quantity" value="2" min="0.1" step="0.1" placeholder="0">
+                        </div>
+                        <div class="unit-toggle">
+                            <button class="unit-btn active" data-unit="imperial">lbs/cups</button>
+                            <button class="unit-btn" data-unit="metric">g/ml</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Salting Percentage Slider -->
+                <div class="section-label">Adjust salting percentage <span class="info-tooltip" title="Adjust based on your personal taste preference">?</span></div>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span>Salting Percentage</span>
+                        <span class="slider-value" id="percentage-display">1.25%</span>
+                    </div>
+                    <input type="range" id="percentage-slider" min="0.5" max="4" value="1.25" step="0.05">
+                    <div class="percentage-markers">
+                        <span>0.5%</span>
+                        <span>1%</span>
+                        <span>1.5%</span>
+                        <span>2%</span>
+                        <span>2.5%</span>
+                        <span>3%</span>
+                        <span>3.5%</span>
+                        <span>4%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Card -->
+            <div class="result-card">
+                <div class="result-header" id="result-header">ADD DIAMOND CRYSTAL</div>
+                
+                <div class="result-main">
+                    <div class="result-amount" id="result-amount">2½ tsp</div>
+                    <div class="result-grams" id="result-grams">11.4g</div>
+                </div>
+
+                <div class="result-divider"></div>
+
+                <div class="result-per-lb">
+                    <div class="per-lb-label">For 1 lb</div>
+                    <div class="per-lb-amount" id="per-lb-amount">2⅛ tsp</div>
+                    <div class="per-lb-note" id="per-lb-note">Based on guideline of 1.5% per lb of Diamond Crystal</div>
+                </div>
+
+                <div class="disclaimer">
+                    ✨ Remember: Your palate is the ultimate arbiter. These are starting guidelines—taste and adjust to your preference!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const saltData = {
+            'diamond': { name: 'Diamond Crystal Kosher', gramsPerTbsp: 9.75 },
+            'morton': { name: "Morton's Kosher", gramsPerTbsp: 14.75 },
+            'fine-sea': { name: 'Fine Sea Salt', gramsPerTbsp: 14.6 },
+            'table': { name: 'Table Salt', gramsPerTbsp: 18.6 },
+            'sel-gris': { name: 'Sel Gris', gramsPerTbsp: 13 },
+            'maldon': { name: 'Maldon', gramsPerTbsp: 8.4 }
+        };
+
+        const guidelinePercentages = {
+            'boneless': 1.25,
+            'bone-in': 1.5,
+            'veggies': 1.0,
+            'water': 2.0,
+            'dough': 2.5
+        };
+
+        const useLabels = {
+            'boneless': 'boneless meat',
+            'bone-in': 'meat on the bone',
+            'veggies': 'vegetables & grains',
+            'water': 'pasta/blanching water',
+            'dough': 'dough & batters'
+        };
+
+        let currentSalt = 'diamond';
+        let currentUse = 'boneless';
+        let currentQuantity = 2;
+        let currentUnit = 'imperial';
+        let currentSaltPercentage = 1.25;
+
+        const slider = document.getElementById('percentage-slider');
+        const percentageDisplay = document.getElementById('percentage-display');
+
+        function updateSliderToGuideline() {
+            currentSaltPercentage = guidelinePercentages[currentUse];
+            slider.value = currentSaltPercentage;
+            percentageDisplay.textContent = currentSaltPercentage.toFixed(2) + '%';
+        }
+
+        updateSliderToGuideline();
+        calculate();
+
+        document.querySelectorAll('input[name="saltType"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                currentSalt = e.target.value;
+                calculate();
+            });
+        });
+
+        document.querySelectorAll('input[name="cookingUse"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                currentUse = e.target.value;
+                updateSliderToGuideline();
+                calculate();
+            });
+        });
+
+        document.getElementById('quantity').addEventListener('input', (e) => {
+            currentQuantity = parseFloat(e.target.value) || 0;
+            calculate();
+        });
+
+        document.querySelectorAll('.unit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentUnit = e.target.dataset.unit;
+                calculate();
+            });
+        });
+
+        slider.addEventListener('input', (e) => {
+            currentSaltPercentage = parseFloat(e.target.value);
+            percentageDisplay.textContent = currentSaltPercentage.toFixed(2) + '%';
+            calculate();
+        });
+
+        function calculate() {
+            const salt = saltData[currentSalt];
+            
+            let weightInGrams = currentQuantity * 453.592;
+            
+            if (currentUnit === 'metric') {
+                if (currentUse === 'water' || currentUse === 'dough') {
+                    weightInGrams = currentQuantity * 946.353;
+                } else {
+                    weightInGrams = currentQuantity;
+                }
+            } else {
+                if (currentUse === 'water' || currentUse === 'dough') {
+                    weightInGrams = currentQuantity * 946.353;
+                }
+            }
+            
+            const saltGramsNeeded = (weightInGrams * currentSaltPercentage) / 100;
+            const gramsPerTsp = salt.gramsPerTbsp / 3;
+            const totalTsp = saltGramsNeeded / gramsPerTsp;
+            
+            // Calculate per lb amount
+            let perLbWeightInGrams = 453.592; // 1 lb
+            if (currentUse === 'water' || currentUse === 'dough') {
+                perLbWeightInGrams = 946.353; // 1 quart/cup
+            }
+            const perLbSaltGrams = (perLbWeightInGrams * currentSaltPercentage) / 100;
+            const perLbTsp = perLbSaltGrams / gramsPerTsp;
+            
+            document.getElementById('result-header').textContent = `ADD ${salt.name.toUpperCase()}`;
+            document.getElementById('result-amount').textContent = formatMeasurement(totalTsp);
+            document.getElementById('result-grams').textContent = saltGramsNeeded.toFixed(1) + 'g';
+            
+            const unitLabel = currentUse === 'water' ? 'quart' : (currentUse === 'dough' ? 'cup' : 'lb');
+            document.getElementById('per-lb-amount').textContent = formatMeasurement(perLbTsp);
+            document.getElementById('per-lb-note').textContent = `Based on guideline of ${currentSaltPercentage.toFixed(2)}% per ${unitLabel} of ${salt.name}`;
+        }
+
+        function formatMeasurement(tsp) {
+            const tbsp = Math.floor(tsp / 3);
+            const remainingTsp = tsp - (tbsp * 3);
+            
+            let result = [];
+            
+            if (tbsp > 0) {
+                result.push(formatFraction(tbsp) + ' Tbsp');
+            }
+            
+            if (remainingTsp > 0.05) {
+                result.push(formatFraction(remainingTsp) + ' tsp');
+            }
+            
+            return result.length > 0 ? result.join(' + ') : '0 tsp';
+        }
+
+        function formatFraction(num) {
+            const whole = Math.floor(num);
+            const decimal = num - whole;
+            
+            let fractionText = '';
+            
+            if (Math.abs(decimal - 0.125) < 0.05) fractionText = '⅛';
+            else if (Math.abs(decimal - 0.25) < 0.05) fractionText = '¼';
+            else if (Math.abs(decimal - 0.333) < 0.05) fractionText = '⅓';
+            else if (Math.abs(decimal - 0.375) < 0.05) fractionText = '⅜';
+            else if (Math.abs(decimal - 0.5) < 0.05) fractionText = '½';
+            else if (Math.abs(decimal - 0.625) < 0.05) fractionText = '⅝';
+            else if (Math.abs(decimal - 0.667) < 0.05) fractionText = '⅔';
+            else if (Math.abs(decimal - 0.75) < 0.05) fractionText = '¾';
+            else if (Math.abs(decimal - 0.875) < 0.05) fractionText = '⅞';
+            else if (decimal > 0.05) {
+                if (Math.abs(decimal - 0.4) < 0.1) fractionText = '⅜';
+                else if (Math.abs(decimal - 0.6) < 0.1) fractionText = '⅝';
+                else fractionText = decimal.toFixed(1);
+            }
+            
+            if (whole > 0 && fractionText) {
+                return whole.toString() + fractionText;
+            } else if (whole > 0) {
+                return whole.toString();
+            } else if (fractionText) {
+                return fractionText;
+            } else {
+                return num.toFixed(1);
+            }
+        }
+    </script>
+</body>
+</html>
